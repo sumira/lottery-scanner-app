@@ -16,7 +16,11 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         toolbarHeight: 160,
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(
+            Icons.menu,
+            color: Colors.white,
+            size: 30,
+          ),
           onPressed: () {},
         ),
         shape: const RoundedRectangleBorder(
@@ -24,6 +28,18 @@ class _HomeState extends State<Home> {
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20))),
         backgroundColor: Colors.blue[300],
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 30),
+            child: IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.account_circle,
+                  size: 100,
+                  color: Colors.white,
+                )),
+          )
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -50,18 +66,12 @@ class _HomeState extends State<Home> {
           //   ],
           // ),
 
-          const Padding(
-            padding: EdgeInsets.only(top: 8, left: 6, right: 6),
-            child: TextField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: "Search Lotteries Here",
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green))),
-            ),
+          const Row(
+            children: [
+              const Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
+              const Text("Most Popular",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
           ),
 
           SizedBox(
@@ -136,6 +146,29 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
+
+          const Row(
+            children: [
+              const Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
+              const Text("Find Latest Results Here",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+
+          const Padding(
+            padding: EdgeInsets.only(top: 8, left: 6, right: 6),
+            child: TextField(
+              decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search),
+                  hintText: "Search Lotteries Here",
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green))),
+            ),
+          ),
+
           const SizedBox(
             height: 5,
           ),
@@ -200,7 +233,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             IconButton(
               icon: const Icon(
-                Icons.notification_important,
+                Icons.notifications,
                 color: Colors.black,
                 size: 30,
               ),
@@ -216,7 +249,7 @@ class _HomeState extends State<Home> {
             ),
             IconButton(
               icon: const Icon(
-                Icons.lock_clock,
+                Icons.access_time,
                 color: Colors.black,
                 size: 30,
               ),
