@@ -19,6 +19,7 @@ class _SandboxState extends State<Sandbox> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 120,

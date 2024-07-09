@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottery_app/data_models/ticket.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -174,42 +175,16 @@ class _HomeState extends State<Home> {
           ),
 
           Expanded(
-              child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Container(
-                  height: 150,
-                  color: Colors.amber[600],
-                  child: const Center(child: Text('Entry A')),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Container(
-                  height: 150,
-                  color: Colors.amber[500],
-                  child: const Center(child: Text('Entry B')),
-                ),
-              ),
-              Container(
-                height: 150,
-                color: Colors.amber[400],
-                child: const Center(child: Text('Entry C')),
-              ),
-              Container(
-                height: 150,
-                color: Colors.amber[300],
-                child: const Center(child: Text('Entry D')),
-              ),
-              Container(
-                height: 150,
-                color: Colors.amber[200],
-                child: const Center(child: Text('Entry E')),
-              ),
-            ],
-          ))
+              child: ListView.builder(
+                  itemCount: tickets.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      leading: const CircleAvatar(
+                        backgroundImage: null,
+                      ),
+                      title: Text(tickets[index].name),
+                    );
+                  }))
         ],
       ),
       //extendBody: true,
