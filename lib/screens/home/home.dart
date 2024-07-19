@@ -10,6 +10,22 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int _selectedIndex = 0;
+
+  static List<Widget> _pages = <Widget>[
+    HomeScreen(),
+    NotificationsPage(),
+    FavoritesPage(),
+    HistoryPage(),
+    SettingsPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -42,205 +58,208 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          // const SizedBox(
-          //   height: 10,
-          // ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     ClipRRect(
-          //       borderRadius: const BorderRadius.only(
-          //           bottomLeft: Radius.circular(30),
-          //           bottomRight: Radius.circular(30)),
-          //       child: Container(
-          //         alignment: Alignment.center,
-          //         constraints: BoxConstraints(
-          //           maxWidth: screenWidth,
-          //           maxHeight: 200,
-          //         ),
-          //         color: Colors.blue[300],
-          //         child: const Text('ClipRRect'),
-          //       ),
-          //     ),
-          //   ],
-          // ),
-
-          const Row(
-            children: [
-              const Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
-              const Text("Most Popular",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-
-          SizedBox(
-            height: 100,
-            child: ListView(
-              padding: const EdgeInsets.all(4.0),
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      padding: const EdgeInsets.only(right: 10),
-                      width: 100,
-                      color: Colors.red[600],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      padding: const EdgeInsets.only(right: 10),
-                      width: 100,
-                      color: Colors.red[500],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      width: 100,
-                      color: Colors.red[400],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      width: 100,
-                      color: Colors.red[300],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      width: 100,
-                      color: Colors.red[200],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Container(
-                      width: 100,
-                      color: Colors.red[100],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const Row(
-            children: [
-              const Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
-              const Text("Find Latest Results Here",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-
-          const Padding(
-            padding: EdgeInsets.only(top: 8, left: 6, right: 6),
-            child: TextField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: "Search Lotteries Here",
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green))),
-            ),
-          ),
-
-          const SizedBox(
-            height: 5,
-          ),
-
-          Expanded(
-              child: ListView.builder(
-                  itemCount: tickets.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      leading: const CircleAvatar(
-                        backgroundImage: null,
-                      ),
-                      title: Text(tickets[index].name),
-                    );
-                  }))
-        ],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
       ),
-      //extendBody: true,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[300],
-        tooltip: 'Increment',
-        onPressed: () {},
+        tooltip: 'Open Scanner',
+        onPressed: () {
+          // Navigates to TicketScanner
+        },
         shape: const CircleBorder(),
         child: const Icon(Icons.camera, size: 30),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        height: 60,
-        color: Colors.blue[300],
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.notifications,
-                color: Colors.black,
-                size: 30,
-              ),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.star,
-                color: Colors.black,
-                size: 30,
-              ),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.access_time,
-                color: Colors.black,
-                size: 30,
-              ),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.settings,
-                color: Colors.black,
-                size: 30,
-              ),
-              onPressed: () {},
-            ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.access_time),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue[800],
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return Column(
+      children: <Widget>[
+        const Row(
+          children: [
+            Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
+            Text("Most Popular", style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
-      ),
+        SizedBox(
+          height: 100,
+          child: ListView(
+            padding: const EdgeInsets.all(4.0),
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    width: 100,
+                    color: Colors.red[600],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    padding: const EdgeInsets.only(right: 10),
+                    width: 100,
+                    color: Colors.red[500],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    width: 100,
+                    color: Colors.red[400],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    width: 100,
+                    color: Colors.red[300],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    width: 100,
+                    color: Colors.red[200],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    width: 100,
+                    color: Colors.red[100],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Row(
+          children: [
+            Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
+            Text("Find Latest Results Here",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8, left: 6, right: 6),
+          child: TextField(
+            decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: "Search Lotteries Here",
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red),
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.green))),
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Expanded(
+          child: ListView.builder(
+              itemCount: tickets.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: const CircleAvatar(
+                    backgroundImage: null,
+                  ),
+                  title: Text(tickets[index].name),
+                );
+              }),
+        )
+      ],
+    );
+  }
+}
+
+class NotificationsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Notifications Page'),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Favorites Page'),
+    );
+  }
+}
+
+class HistoryPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('History Page'),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Settings Page'),
     );
   }
 }

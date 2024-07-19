@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:lottery_app/screens/home/home.dart';
 
 void main() {
