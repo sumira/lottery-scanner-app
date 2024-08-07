@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottery_app/data_models/ticket.dart';
+import 'package:lottery_app/routes/routes.dart';
+import 'package:lottery_app/screens/scanner.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,10 +14,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
-  static List<Widget> _pages = <Widget>[
+  static final List<Widget> _pages = <Widget>[
     HomeScreen(),
-    NotificationsPage(),
-    FavoritesPage(),
+    //NotificationsPage(),
+    TicketScanner(),
+    CameraPage(),
     HistoryPage(),
     SettingsPage(),
   ];
@@ -66,6 +69,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.blue[300],
         tooltip: 'Open Scanner',
         onPressed: () {
+          Navigator.of(context).pushNamed(RouteManager.scanner);
           // Navigates to TicketScanner
         },
         shape: const CircleBorder(),
@@ -82,10 +86,10 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.notifications),
             label: 'Notifications',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Favorites',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.camera),
+          //   label: 'Scanner',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.access_time),
             label: 'History',
@@ -260,6 +264,15 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text('Settings Page'),
+    );
+  }
+}
+
+class CameraPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Camera Page'),
     );
   }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lottery_app/routes/routes.dart';
 
 import 'package:lottery_app/screens/home/home.dart';
 
 void main() {
   runApp(const MaterialApp(
-    home: Home(),
+    initialRoute: RouteManager.homePage,
+    onGenerateRoute: RouteManager.generateRoute,
     debugShowCheckedModeBanner: false,
   ));
 }
@@ -175,7 +177,7 @@ class _SandboxState extends State<Sandbox> {
         height: 60,
         color: Colors.cyan.shade400,
         shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
+        notchMargin: 10,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
