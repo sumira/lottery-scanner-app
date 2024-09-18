@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "915223976930",
+    "project_id": "lottery-scanner-app-5c18e",
+    "storage_bucket": "lottery-scanner-app-5c18e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915223976930:android:5f732432f2652f0e3f37bb",
+        "android_client_info": {
+          "package_name": "com.example.lottery_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxYVTbUCTf2bCDyBNgakfGXuT_htQQSEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
