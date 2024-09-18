@@ -5,8 +5,11 @@ class TicketScanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text("Hello  I am the scanner"),
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(
+        color: Colors.blue,
+      ),
     );
   }
 }

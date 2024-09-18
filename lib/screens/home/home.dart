@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottery_app/data_models/ticket.dart';
+import 'package:lottery_app/routes/routes.dart';
+import 'package:lottery_app/screens/home/home_page.dart';
+import 'package:lottery_app/screens/lottery_history.dart';
+import 'package:lottery_app/screens/notifications.dart';
+import 'package:lottery_app/screens/settings.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,23 +15,27 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
-  static List<Widget> _pages = <Widget>[
+  static final List<Widget> _pages = <Widget>[
     HomeScreen(),
-    NotificationsPage(),
-    FavoritesPage(),
-    HistoryPage(),
-    SettingsPage(),
+    LotteryNotifications(),
+    HomeScreen(), // Placeholder for scanner
+    LotteryHistory(),
+    Settings(),
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 2) {
+      // Open scanner
+      Navigator.of(context).pushNamed(RouteManager.scanner);
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 160,
@@ -62,204 +69,46 @@ class _HomeState extends State<Home> {
         index: _selectedIndex,
         children: _pages,
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue[300],
-        tooltip: 'Open Scanner',
-        onPressed: () {
-          // Navigates to TicketScanner
-        },
-        shape: const CircleBorder(),
-        child: const Icon(Icons.camera, size: 30),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            _buildNavItem(Icons.home, 'Home', 0),
+            _buildNavItem(Icons.notifications, 'Notifications', 1),
+            _buildNavItem(Icons.camera, 'Scanner', 2, isScanner: true),
+            _buildNavItem(Icons.access_time, 'History', 3),
+            _buildNavItem(Icons.settings, 'Settings', 4),
+          ],
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index,
+      {bool isScanner = false}) {
+    return InkWell(
+      onTap: () => _onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isScanner
+                ? Colors.blue[300]
+                : (_selectedIndex == index ? Colors.blue[800] : Colors.grey),
+            size: isScanner ? 30 : 24,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+          Text(
+            label,
+            style: TextStyle(
+              color: isScanner
+                  ? Colors.blue[300]
+                  : (_selectedIndex == index ? Colors.blue[800] : Colors.grey),
+              fontSize: 12,
+            ),
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue[800],
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
       ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    return Column(
-      children: <Widget>[
-        const Row(
-          children: [
-            Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
-            Text("Most Popular", style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        SizedBox(
-          height: 100,
-          child: ListView(
-            padding: const EdgeInsets.all(4.0),
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    width: 100,
-                    color: Colors.red[600],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    width: 100,
-                    color: Colors.red[500],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    width: 100,
-                    color: Colors.red[400],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    width: 100,
-                    color: Colors.red[300],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    width: 100,
-                    color: Colors.red[200],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    width: 100,
-                    color: Colors.red[100],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Row(
-          children: [
-            Padding(padding: EdgeInsets.fromLTRB(10, 24, 0, 0)),
-            Text("Find Latest Results Here",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 8, left: 6, right: 6),
-          child: TextField(
-            decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                hintText: "Search Lotteries Here",
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                ),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green))),
-          ),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        Expanded(
-          child: ListView.builder(
-              itemCount: tickets.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: const CircleAvatar(
-                    backgroundImage: null,
-                  ),
-                  title: Text(tickets[index].name),
-                );
-              }),
-        )
-      ],
-    );
-  }
-}
-
-class NotificationsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Notifications Page'),
-    );
-  }
-}
-
-class FavoritesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Favorites Page'),
-    );
-  }
-}
-
-class HistoryPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('History Page'),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Settings Page'),
     );
   }
 }
