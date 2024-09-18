@@ -11,6 +11,8 @@ buildscript {
     }
 }
 
+//nothing to add more
+
 allprojects {
     repositories {
         google()
