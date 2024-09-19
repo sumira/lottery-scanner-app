@@ -124,3 +124,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+
+// CustomButton(
+//             onTab: 
+//             text: "Logout"),
