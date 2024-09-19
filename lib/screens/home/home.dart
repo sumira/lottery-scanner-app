@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lottery_app/pages/login/signUp/login.dart';
 import 'package:lottery_app/routes/routes.dart';
 import 'package:lottery_app/screens/home/home_page.dart';
 import 'package:lottery_app/pages/lottery_history.dart';
 import 'package:lottery_app/pages/notifications.dart';
 import 'package:lottery_app/pages/settings.dart';
+import 'package:lottery_app/services/authentication.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -41,11 +43,15 @@ class _HomeState extends State<Home> {
         toolbarHeight: 160,
         leading: IconButton(
           icon: const Icon(
-            Icons.menu,
+            Icons.logout,
             color: Colors.white,
             size: 30,
           ),
-          onPressed: () {},
+          onPressed: () async {
+            await AuthServices().signOut();
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()));
+          },
         ),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
