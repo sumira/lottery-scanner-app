@@ -6,7 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MaterialApp(
-    initialRoute: RouteManager.homePage,
+    initialRoute: RouteManager.login,
     onGenerateRoute: RouteManager.generateRoute,
     debugShowCheckedModeBanner: false,
   ));
