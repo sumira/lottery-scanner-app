@@ -1,6 +1,6 @@
 # lottery_app
 
-A new Flutter project.
+Lottery Scanner App allows the users to scan their tickets and get notifications if they have winning chances. 
 
 ## Getting Started
 
