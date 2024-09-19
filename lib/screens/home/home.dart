@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottery_app/routes/routes.dart';
 import 'package:lottery_app/screens/home/home_page.dart';
-import 'package:lottery_app/screens/lottery_history.dart';
-import 'package:lottery_app/screens/notifications.dart';
-import 'package:lottery_app/screens/settings.dart';
+import 'package:lottery_app/pages/lottery_history.dart';
+import 'package:lottery_app/pages/notifications.dart';
+import 'package:lottery_app/pages/settings.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
