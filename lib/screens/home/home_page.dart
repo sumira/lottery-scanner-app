@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:lottery_app/data_models/ticket.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late List<Ticket> filteredTickets;
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredTickets = (tickets as List).map((item) => item as Ticket).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,23 +41,30 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 100,
+          height: 80,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
-            itemCount: 6,
+            itemCount: tickets.length > 6 ? 6 : tickets.length,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
+              return GestureDetector(
+                onTap: () {
+                  //listview code
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
                   child: Container(
-                    width: 100,
-                    color: Colors.red[(6 - index) * 100],
-                    child: Center(
-                      child: Text(
-                        'Item ${index + 1}',
-                        style: const TextStyle(color: Colors.white),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.blue, width: 2),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Container(
+                        width: 100,
+                        color: Colors.white,
+                        child: Image.asset(tickets[index].imagePath,
+                            fit: BoxFit.cover),
                       ),
                     ),
                   ),
@@ -83,6 +104,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             child: TextField(
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: "Search Lotteries Here",
                 prefixIcon: Icon(Icons.search, color: Colors.blue[300]),
@@ -90,6 +112,16 @@ class HomeScreen extends StatelessWidget {
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 15),
               ),
+              onChanged: (value) {
+                setState(() {
+                  filteredTickets = (tickets as List)
+                      .map((item) => item as Ticket)
+                      .where((ticket) => ticket.name
+                          .toLowerCase()
+                          .contains(value.toLowerCase()))
+                      .toList();
+                });
+              },
             ),
           ),
         ),
@@ -103,15 +135,15 @@ class HomeScreen extends StatelessWidget {
         return ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage(
-              tickets[index].imagePath,
+              filteredTickets[index].imagePath,
             ),
             backgroundColor: Colors.blue[300],
           ),
-          title: Text(tickets[index].name),
+          title: Text(filteredTickets[index].name),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         );
       },
-      childCount: tickets.length,
+      childCount: filteredTickets.length,
     );
   }
 }
