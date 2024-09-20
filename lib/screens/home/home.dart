@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottery_app/pages/login/signUp/login.dart';
 import 'package:lottery_app/routes/routes.dart';
@@ -6,6 +7,7 @@ import 'package:lottery_app/pages/lottery_history.dart';
 import 'package:lottery_app/pages/notifications.dart';
 import 'package:lottery_app/pages/settings.dart';
 import 'package:lottery_app/services/authentication.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,13 +18,48 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+  Future<void> _fetchUserName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null && user.email != null) {
+      try {
+        QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: user.email)
+            .limit(1)
+            .get();
+
+        if (userSnapshot.docs.isNotEmpty) {
+          setState(() {
+            userName = userSnapshot.docs.first['name'];
+          });
+        } else {
+          setState(() {
+            userName = 'User';
+          });
+        }
+      } catch (e) {
+        print('Error fetching user name: $e');
+        setState(() {
+          userName = 'User';
+        });
+      }
+    }
+  }
 
   static final List<Widget> _pages = <Widget>[
     HomeScreen(),
     LotteryNotifications(),
-    HomeScreen(), // Placeholder for scanner
+    HomeScreen(),
     LotteryHistory(),
-    Settings(),
+    SettingsPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -58,18 +95,28 @@ class _HomeState extends State<Home> {
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20))),
         backgroundColor: Colors.blue[300],
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 30),
-            child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.account_circle,
-                  size: 100,
-                  color: Colors.white,
-                )),
-          )
-        ],
+        flexibleSpace: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Welcome,',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                userName ?? 'User',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
       ),
       body: IndexedStack(
         index: _selectedIndex,
