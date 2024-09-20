@@ -20,6 +20,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   String? userName;
+  String? userEmail;
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _HomeState extends State<Home> {
         if (userSnapshot.docs.isNotEmpty) {
           setState(() {
             userName = userSnapshot.docs.first['name'];
+            userEmail = userSnapshot.docs.first['email'];
           });
         } else {
           setState(() {
@@ -96,7 +98,7 @@ class _HomeState extends State<Home> {
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20))),
-        backgroundColor: Colors.blue[300],
+        backgroundColor: Colors.blue[400],
         flexibleSpace: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -111,6 +113,13 @@ class _HomeState extends State<Home> {
               const SizedBox(height: 4),
               Text(
                 userName ?? 'User',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              Text(
+                userEmail ?? 'Email',
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -149,7 +158,7 @@ class _HomeState extends State<Home> {
           Icon(
             icon,
             color: isScanner
-                ? Colors.blue[300]
+                ? Colors.blue[400]
                 : (_selectedIndex == index ? Colors.blue[800] : Colors.grey),
             size: isScanner ? 30 : 24,
           ),
@@ -157,7 +166,7 @@ class _HomeState extends State<Home> {
             label,
             style: TextStyle(
               color: isScanner
-                  ? Colors.blue[300]
+                  ? Colors.blue[400]
                   : (_selectedIndex == index ? Colors.blue[800] : Colors.grey),
               fontSize: 12,
             ),

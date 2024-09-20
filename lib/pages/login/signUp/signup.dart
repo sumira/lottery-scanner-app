@@ -17,6 +17,7 @@ class _SignupState extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController rePasswordController = TextEditingController();
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -34,19 +35,23 @@ class _SignupState extends State<Signup> {
         isLoading = true;
       });
 
-      String res = await AuthServices().signUpUser(
-          email: emailController.text,
-          password: passwordController.text,
-          name: nameController.text);
+      if (passwordController.text == rePasswordController.text) {
+        String res = await AuthServices().signUpUser(
+            email: emailController.text,
+            password: passwordController.text,
+            name: nameController.text);
 
-      if (res == "success") {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Home()));
+        if (res == "success") {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const Home()));
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          showSnackbar(context, res);
+        }
       } else {
-        setState(() {
-          isLoading = false;
-        });
-        showSnackbar(context, res);
+        showSnackbar(context, "Passwords are not matching");
       }
     }
   }
@@ -68,7 +73,7 @@ class _SignupState extends State<Signup> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                            height: MediaQuery.of(context).size.height / 3.0,
+                            height: MediaQuery.of(context).size.height / 3.5,
                             child: Image.asset("assets/add-friend.png")),
                         CustomTextField(
                           textEditingController: nameController,
@@ -98,13 +103,28 @@ class _SignupState extends State<Signup> {
                           },
                         ),
                         CustomTextField(
-                          textEditingController: passwordController,
+                          textEditingController: rePasswordController,
                           hintText: 'Password',
                           icon: Icons.lock,
                           isPass: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
+                            }
+                            if (value.length < 6) {
+                              return 'Password must be at least 6 characters long';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomTextField(
+                          textEditingController: passwordController,
+                          hintText: 'Re-enter password',
+                          icon: Icons.lock,
+                          isPass: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please re-enter your password';
                             }
                             if (value.length < 6) {
                               return 'Password must be at least 6 characters long';
