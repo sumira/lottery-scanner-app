@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottery_app/pages/login/signUp/login.dart';
+import 'package:lottery_app/pages/scanner.dart';
 import 'package:lottery_app/routes/routes.dart';
 import 'package:lottery_app/screens/home/home_page.dart';
 import 'package:lottery_app/pages/lottery_history.dart';
@@ -57,7 +58,7 @@ class _HomeState extends State<Home> {
   static final List<Widget> _pages = <Widget>[
     HomeScreen(),
     LotteryNotifications(),
-    HomeScreen(),
+    TicketScanner(),
     LotteryHistory(),
     SettingsPage(),
   ];
@@ -65,7 +66,8 @@ class _HomeState extends State<Home> {
   void _onItemTapped(int index) {
     if (index == 2) {
       // Open scanner
-      Navigator.of(context).pushNamed(RouteManager.scanner);
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => TicketScanner()));
     } else {
       setState(() {
         _selectedIndex = index;

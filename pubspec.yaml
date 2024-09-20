@@ -65,6 +65,14 @@ flutter:
     - assets/add-friend.png
     - assets/key.png
     - assets/signup.png
+    - assets/mahajana_sampatha.jpeg
+    - assets/lagna_wasanawa.png
+    - assets/neeroga.png
+    - assets/dana_nidanaya.png
+    - assets/govisetha.png
+    - assets/super_ball.jpg
+    - assets/shanida_wasanawa.jpeg
+    - assets/jayoda.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
