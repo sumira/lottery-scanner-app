@@ -1,7 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-class TicketScanner extends StatelessWidget {
+class TicketScanner extends StatefulWidget {
   const TicketScanner({Key? key}) : super(key: key);
+
+  @override
+  _TicketScannerState createState() => _TicketScannerState();
+}
+
+class _TicketScannerState extends State<TicketScanner> {
+  File? _image;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +40,37 @@ class TicketScanner extends StatelessWidget {
             colors: [Colors.blue[100]!, Colors.white],
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildScanOption(
-                context: context,
-                title: 'Open Camera',
-                icon: Icons.camera_alt,
-                onPressed: () {
-                  // TODO: Implement camera functionality
-                  print('Camera button pressed');
-                },
+        child: Column(
+          children: [
+            Expanded(
+              child: _image == null
+                  ? Center(child: Text('No image selected.'))
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.file(_image!),
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildScanOption(
+                    context: context,
+                    title: 'Camera',
+                    icon: Icons.camera_alt,
+                    onPressed: () => _pickImage(ImageSource.camera),
+                  ),
+                  _buildScanOption(
+                    context: context,
+                    title: 'Gallery',
+                    icon: Icons.photo_library,
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                  ),
+                ],
               ),
-              const SizedBox(height: 40),
-              _buildScanOption(
-                context: context,
-                title: 'Open Gallery',
-                icon: Icons.photo_library,
-                onPressed: () {
-                  // TODO: Implement gallery functionality
-                  print('Gallery button pressed');
-                },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -56,46 +82,31 @@ class TicketScanner extends StatelessWidget {
     required IconData icon,
     required VoidCallback onPressed,
   }) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.8,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Column(
+      children: [
+        ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(20),
+            backgroundColor: Colors.blue[300],
+            elevation: 5,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.blue[800],
-                  fontWeight: FontWeight.bold,
-                ),
+          child: Icon(
+            icon,
+            size: 30,
+            color: Colors.white,
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(24),
-              backgroundColor: Colors.blue[300],
-              elevation: 5,
-            ),
-            child: Icon(
-              icon,
-              size: 50,
-              color: Colors.white,
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: TextStyle(
+            color: Colors.blue[800],
+            fontWeight: FontWeight.bold,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
