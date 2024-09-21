@@ -1,4 +1,4 @@
-import 'package:lottery_app/screens/home/home.dart';
+import 'package:lottery_app/pages/home/home.dart';
 import 'package:lottery_app/pages/login/signUp/signup.dart';
 import 'package:lottery_app/services/authentication.dart';
 import 'package:lottery_app/widgets/custom_button.dart';

@@ -4,7 +4,7 @@ import 'package:lottery_app/widgets/custom_button.dart';
 import 'package:lottery_app/widgets/snack_bar.dart';
 import 'package:lottery_app/widgets/text_field.dart';
 import 'package:lottery_app/pages/login/signUp/login.dart';
-import 'package:lottery_app/screens/home/home.dart';
+import 'package:lottery_app/pages/home/home.dart';
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);

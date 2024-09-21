@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:lottery_app/pages/login/signUp/login.dart";
-import "package:lottery_app/screens/home/home.dart";
+import "package:lottery_app/pages/home/home.dart";
 import "package:lottery_app/pages/scanner.dart";
-import "package:lottery_app/screens/splash/splash.dart";
+import "package:lottery_app/pages/splash/splash.dart";
 
 class RouteManager {
   static const String homePage = '/';
