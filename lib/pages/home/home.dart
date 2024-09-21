@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottery_app/pages/login/signUp/login.dart';
 import 'package:lottery_app/pages/scanner.dart';
-import 'package:lottery_app/screens/home/home_page.dart';
+import 'package:lottery_app/pages/home/home_page.dart';
 import 'package:lottery_app/pages/lottery_history.dart';
 import 'package:lottery_app/pages/notifications.dart';
 import 'package:lottery_app/pages/settings.dart';

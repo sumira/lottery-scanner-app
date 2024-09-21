@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottery_app/data_models/ticket.dart';
+import 'package:lottery_app/pages/results_viewer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -49,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  //listview code
+                  _navigateToLotteryResults(tickets[index]);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
@@ -141,9 +142,28 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           title: Text(filteredTickets[index].name),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          onTap: () {
+            _navigateToLotteryResults(filteredTickets[index]);
+          },
         );
       },
       childCount: filteredTickets.length,
+    );
+  }
+
+  void _navigateToLotteryResults(Ticket ticket) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LotteryResultsScreen(
+          lotteryName: ticket.name,
+          drawNumber: ticket.drawNumber,
+          drawDate: ticket.date,
+          winningNumbers: ticket.winningNumbers,
+          specialCharacter: ticket.specialCharacter,
+          lotteryImageUrl: ticket.imagePath,
+        ),
+      ),
     );
   }
 }
