@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottery_app/pages/login/signUp/login.dart';
 import 'package:lottery_app/pages/scanner.dart';
-import 'package:lottery_app/routes/routes.dart';
 import 'package:lottery_app/screens/home/home_page.dart';
 import 'package:lottery_app/pages/lottery_history.dart';
 import 'package:lottery_app/pages/notifications.dart';
@@ -20,7 +19,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   String? userName;
-  String? userEmail;
+  //String? userEmail;
 
   @override
   void initState() {
@@ -41,7 +40,7 @@ class _HomeState extends State<Home> {
         if (userSnapshot.docs.isNotEmpty) {
           setState(() {
             userName = userSnapshot.docs.first['name'];
-            userEmail = userSnapshot.docs.first['email'];
+            //userEmail = userSnapshot.docs.first['email'];
           });
         } else {
           setState(() {
@@ -81,7 +80,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 160,
+        toolbarHeight: 140,
         leading: IconButton(
           icon: const Icon(
             Icons.logout,
@@ -118,13 +117,13 @@ class _HomeState extends State<Home> {
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
-              Text(
-                userEmail ?? 'Email',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
+              // Text(
+              //   userEmail ?? 'Email',
+              //   style: const TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 20,
+              //       fontWeight: FontWeight.bold),
+              // ),
             ],
           ),
         ),
