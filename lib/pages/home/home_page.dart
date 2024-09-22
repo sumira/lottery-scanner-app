@@ -10,17 +10,66 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late List<Ticket> filteredTickets;
+  List<Ticket> allTickets = [];
+  List<Ticket> filteredTickets = [];
   TextEditingController searchController = TextEditingController();
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    filteredTickets = (tickets as List).map((item) => item as Ticket).toList();
+    _loadTickets();
+  }
+
+  Future<void> _loadTickets() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final String baseUrl = 'http://10.0.2.2:5000';
+
+    try {
+      print('Fetching tickets from $baseUrl...');
+
+      await TicketManager.fetchTicketsFromEndpoint(
+          baseUrl: baseUrl, timeout: 15, maxRetries: 3);
+
+      print('Tickets fetched successfully');
+
+      setState(() {
+        allTickets = TicketManager.tickets;
+        filteredTickets = allTickets;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching tickets: $e');
+      setState(() {
+        isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Unable to load tickets. Please check your connection and try again.',
+            ),
+            duration: Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: _loadTickets,
+            ),
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: _buildMostPopular()),
@@ -46,11 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
-            itemCount: tickets.length > 6 ? 6 : tickets.length,
+            itemCount: allTickets.length > 6 ? 6 : allTickets.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  _navigateToLotteryResults(tickets[index]);
+                  _navigateToLotteryResults(allTickets[index]);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
@@ -64,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         width: 100,
                         color: Colors.white,
-                        child: Image.asset(tickets[index].imagePath,
+                        child: Image.asset(allTickets[index].imagePath,
                             fit: BoxFit.cover),
                       ),
                     ),
@@ -115,8 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               onChanged: (value) {
                 setState(() {
-                  filteredTickets = (tickets as List)
-                      .map((item) => item as Ticket)
+                  filteredTickets = allTickets
                       .where((ticket) => ticket.name
                           .toLowerCase()
                           .contains(value.toLowerCase()))

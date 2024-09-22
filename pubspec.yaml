@@ -39,6 +39,8 @@ dependencies:
   firebase_auth: ^5.3.0
   cloud_firestore: ^5.4.2
   image_picker: ^1.1.2
+  intl: ^0.19.0
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
@@ -66,14 +68,23 @@ flutter:
     - assets/add-friend.png
     - assets/key.png
     - assets/signup.png
-    - assets/mahajana_sampatha.jpeg
+    - assets/mahajana_sampatha.png
     - assets/lagna_wasanawa.png
     - assets/neeroga.png
-    - assets/dana_nidanaya.png
+    - assets/dhana_nidhanaya.png
     - assets/govisetha.png
-    - assets/super_ball.jpg
-    - assets/shanida_wasanawa.jpeg
-    - assets/jayoda.jpg
+    - assets/super_ball.png
+    - assets/shanida.png
+    - assets/jayoda.png
+    - assets/ada_kotipathi.png
+    - assets/ada_sampatha.png
+    - assets/handahana.png
+    - assets/kapruka.png
+    - assets/lucky_7.png
+    - assets/mega_power.png
+    - assets/sasiri.png
+    - assets/super_ball.png
+    - assets/supiri_dhana_sampatha.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
