@@ -10,17 +10,17 @@ class LotteryHistory extends StatefulWidget {
 class _LotteryHistoryState extends State<LotteryHistory> {
   final List<Map<String, String>> scannedTickets = [
     {
-      "ticketNumber": "123456",
+      "ticketNumber": "Super Ball",
       "scanDate": "2024-09-15",
       "result": "Winner: \$100"
     },
     {
-      "ticketNumber": "654321",
+      "ticketNumber": "Mega Power",
       "scanDate": "2024-09-10",
       "result": "Not a Winner"
     },
     {
-      "ticketNumber": "789012",
+      "ticketNumber": "Jayoda",
       "scanDate": "2024-09-08",
       "result": "Winner: \$500"
     },
