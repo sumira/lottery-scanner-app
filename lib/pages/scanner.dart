@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
 
 class TicketScanner extends StatefulWidget {
   const TicketScanner({Key? key}) : super(key: key);
@@ -11,6 +13,7 @@ class TicketScanner extends StatefulWidget {
 
 class _TicketScannerState extends State<TicketScanner> {
   File? _image;
+  bool _isUploading = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -19,6 +22,52 @@ class _TicketScannerState extends State<TicketScanner> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an image first')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://10.0.2.2:5000/scan-image'),
+      );
+      request.files.add(await http.MultipartFile.fromPath(
+        'file', // Use 'file' as the key, matching your Postman request
+        _image!.path,
+      ));
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      developer.log('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Image uploaded successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to upload image')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        _isUploading = false;
       });
     }
   }
@@ -68,6 +117,23 @@ class _TicketScannerState extends State<TicketScanner> {
                     onPressed: () => _pickImage(ImageSource.gallery),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: ElevatedButton(
+                onPressed: _isUploading ? null : _uploadImage,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue[300],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+                child: _isUploading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Upload Image',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
               ),
             ),
           ],

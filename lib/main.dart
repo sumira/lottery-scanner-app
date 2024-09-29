@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _getPageRoute(RouteManager.homePage);
           } else {
-            // User is not signed in
             return _getPageRoute(RouteManager.login);
           }
         },

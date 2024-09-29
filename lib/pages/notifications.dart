@@ -10,17 +10,17 @@ class LotteryNotifications extends StatefulWidget {
 class _LotteryNotificationsState extends State<LotteryNotifications> {
   final List<Map<String, String>> notifications = [
     {
-      "title": "Ticket #123456",
+      "title": "Mahajana Sampatha",
       "message": "You won 100 on your lottery ticket!",
       "time": "2 hours ago"
     },
     {
-      "title": "Ticket #654321",
+      "title": "Shanida",
       "message": "Your ticket did not win this time.",
       "time": "1 day ago"
     },
     {
-      "title": "Ticket #789012",
+      "title": "Kotipathi Kapruka",
       "message": "The draw is in 3 hours. Don't forget!",
       "time": "2 days ago"
     },

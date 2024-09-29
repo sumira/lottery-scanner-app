@@ -3,6 +3,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottery_app/pages/change_account_details.dart';
+import 'package:lottery_app/pages/scanner.dart';
 import 'package:lottery_app/services/authentication.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -76,7 +78,10 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 10),
             SettingsButton(
               text: 'Change Account Details',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ChangeAccountDetailsPage()));
+              },
             ),
           ],
         ),
