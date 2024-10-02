@@ -3,6 +3,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class TicketScanner extends StatefulWidget {
   const TicketScanner({Key? key}) : super(key: key);
@@ -14,6 +17,17 @@ class TicketScanner extends StatefulWidget {
 class _TicketScannerState extends State<TicketScanner> {
   File? _image;
   bool _isUploading = false;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFirebase();
+  }
+
+  Future<void> _initializeFirebase() async {
+    await Firebase.initializeApp();
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -44,7 +58,7 @@ class _TicketScannerState extends State<TicketScanner> {
         Uri.parse('http://10.0.2.2:5000/scan-image'),
       );
       request.files.add(await http.MultipartFile.fromPath(
-        'file', // Use 'file' as the key, matching your Postman request
+        'file',
         _image!.path,
       ));
       var streamedResponse = await request.send();
@@ -53,6 +67,8 @@ class _TicketScannerState extends State<TicketScanner> {
       developer.log('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        _showResponseDialog(responseData);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Image uploaded successfully')),
         );
@@ -69,6 +85,111 @@ class _TicketScannerState extends State<TicketScanner> {
       setState(() {
         _isUploading = false;
       });
+    }
+  }
+
+  void _showResponseDialog(Map<String, dynamic> responseData) {
+    final dateController =
+        TextEditingController(text: responseData['data']['date']);
+    final drawNoController =
+        TextEditingController(text: responseData['data']['draw_no']);
+    final numbersController =
+        TextEditingController(text: responseData['data']['numbers'].join(', '));
+    final doubleChanceController = TextEditingController(
+        text: responseData['data']['double_chance'].join(', '));
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Scan Result'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  controller: dateController,
+                  decoration: InputDecoration(labelText: 'Date'),
+                ),
+                TextField(
+                  controller: drawNoController,
+                  decoration: InputDecoration(labelText: 'Draw No'),
+                ),
+                TextField(
+                  controller: numbersController,
+                  decoration:
+                      InputDecoration(labelText: 'Numbers (comma-separated)'),
+                ),
+                TextField(
+                  controller: doubleChanceController,
+                  decoration: InputDecoration(
+                      labelText: 'Double Chance (comma-separated)'),
+                ),
+                Text('File: ${responseData['file']}'),
+                Text('Type: ${responseData['type']}'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child:
+                  _isSaving ? CircularProgressIndicator() : Text('Save Ticket'),
+              onPressed: _isSaving
+                  ? null
+                  : () async {
+                      setState(() {
+                        _isSaving = true;
+                      });
+
+                      // Update responseData with edited values
+                      responseData['data']['date'] = dateController.text;
+                      responseData['data']['draw_no'] = drawNoController.text;
+                      responseData['data']['numbers'] = numbersController.text
+                          .split(',')
+                          .map((e) => e.trim())
+                          .toList();
+                      responseData['data']['double_chance'] =
+                          doubleChanceController.text
+                              .split(',')
+                              .map((e) => e.trim())
+                              .toList();
+
+                      await _saveTicketToFirestore(responseData);
+                      setState(() {
+                        _isSaving = false;
+                      });
+                      Navigator.of(context).pop();
+                    },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _saveTicketToFirestore(Map<String, dynamic> ticketData) async {
+    try {
+      await FirebaseFirestore.instance.collection('saved_tickets').add({
+        'date': ticketData['data']['date'],
+        'double_chance': ticketData['data']['double_chance'],
+        'draw_no': ticketData['data']['draw_no'],
+        'numbers': ticketData['data']['numbers'],
+        'file': ticketData['file'],
+        'type': ticketData['type'],
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ticket saved successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving ticket: $e')),
+      );
     }
   }
 
