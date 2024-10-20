@@ -31,6 +31,8 @@ class _HomeState extends State<Home> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null && user.email != null) {
       try {
+        print('Fetching user data for email: ${user.email}');
+
         QuerySnapshot userSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .where('email', isEqualTo: user.email)
@@ -38,11 +40,16 @@ class _HomeState extends State<Home> {
             .get();
 
         if (userSnapshot.docs.isNotEmpty) {
+          print('User document found');
+          var userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+          print('User data: $userData');
+
           setState(() {
-            userName = userSnapshot.docs.first['name'];
-            //userEmail = userSnapshot.docs.first['email'];
+            userName = userData['name'] as String?;
+            print('Username set to: $userName');
           });
         } else {
+          print('No user document found for email: ${user.email}');
           setState(() {
             userName = 'User';
           });
