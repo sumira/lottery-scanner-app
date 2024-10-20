@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -6,6 +7,7 @@ import 'dart:developer' as developer;
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TicketScanner extends StatefulWidget {
   const TicketScanner({Key? key}) : super(key: key);
@@ -18,15 +20,33 @@ class _TicketScannerState extends State<TicketScanner> {
   File? _image;
   bool _isUploading = false;
   bool _isSaving = false;
+  String? _username;
+  static const String TICKETS_KEY = 'lottery_tickets';
+  SharedPreferences? _prefs;
 
   @override
   void initState() {
     super.initState();
     _initializeFirebase();
+    _getCurrentUser();
+    _initPrefs();
+  }
+
+  Future<void> _initPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
   }
 
   Future<void> _initializeFirebase() async {
     await Firebase.initializeApp();
+  }
+
+  Future<void> _getCurrentUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? user.email ?? user.uid;
+      });
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -37,6 +57,93 @@ class _TicketScannerState extends State<TicketScanner> {
       setState(() {
         _image = File(pickedFile.path);
       });
+    }
+  }
+
+  Future<void> _saveTicketLocally(Map<String, dynamic> ticketData) async {
+    if (_username == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: User not logged in')),
+      );
+      return;
+    }
+
+    try {
+      if (_prefs == null) {
+        await _initPrefs();
+      }
+
+      // Get existing tickets
+      List<String> tickets = _prefs!.getStringList(TICKETS_KEY) ?? [];
+
+      // Create new ticket
+      final ticket = {
+        'username': _username,
+        'date': ticketData['data']['date'].toString(),
+        'draw_no': ticketData['data']['draw_no'].toString(),
+        'numbers': (ticketData['data']['numbers'] as List)
+            .map((e) => e.toString())
+            .toList(),
+        'double_chance': (ticketData['data']['double_chance'] as List)
+            .map((e) => e.toString())
+            .toList(),
+        'file': ticketData['file'].toString(),
+        'type': ticketData['type'].toString(),
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+
+      // Convert to JSON string
+      String ticketJson = jsonEncode(ticket);
+
+      // Add to existing tickets
+      tickets.add(ticketJson);
+
+      // Save updated list
+      await _prefs!.setStringList(TICKETS_KEY, tickets);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ticket saved successfully')),
+      );
+    } catch (e, stackTrace) {
+      print('Error saving ticket: $e');
+      print('Stack trace: $stackTrace');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving ticket: $e')),
+      );
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllTickets() async {
+    try {
+      if (_prefs == null) {
+        await _initPrefs();
+      }
+
+      final List<String> ticketStrings =
+          _prefs!.getStringList(TICKETS_KEY) ?? [];
+
+      return ticketStrings.map((ticketString) {
+        try {
+          return Map<String, dynamic>.from(jsonDecode(ticketString));
+        } catch (e) {
+          print('Error decoding ticket: $e');
+          return <String, dynamic>{};
+        }
+      }).toList();
+    } catch (e) {
+      print('Error getting tickets: $e');
+      return [];
+    }
+  }
+
+  Future<void> clearAllTickets() async {
+    try {
+      if (_prefs == null) {
+        await _initPrefs();
+      }
+      await _prefs!.remove(TICKETS_KEY);
+    } catch (e) {
+      print('Error clearing tickets: $e');
     }
   }
 
@@ -159,7 +266,7 @@ class _TicketScannerState extends State<TicketScanner> {
                               .map((e) => e.trim())
                               .toList();
 
-                      await _saveTicketToFirestore(responseData);
+                      await _saveTicketLocally(responseData);
                       setState(() {
                         _isSaving = false;
                       });
@@ -172,34 +279,13 @@ class _TicketScannerState extends State<TicketScanner> {
     );
   }
 
-  Future<void> _saveTicketToFirestore(Map<String, dynamic> ticketData) async {
-    try {
-      await FirebaseFirestore.instance.collection('saved_tickets').add({
-        'date': ticketData['data']['date'],
-        'double_chance': ticketData['data']['double_chance'],
-        'draw_no': ticketData['data']['draw_no'],
-        'numbers': ticketData['data']['numbers'],
-        'file': ticketData['file'],
-        'type': ticketData['type'],
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ticket saved successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving ticket: $e')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ticket Scanner'),
         centerTitle: true,
-        foregroundColor: Colors.white,
+        foregroundColor: const Color.fromARGB(255, 137, 118, 118),
         backgroundColor: Colors.blue[300],
       ),
       body: Container(

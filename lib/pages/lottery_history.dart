@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class LotteryHistory extends StatefulWidget {
   const LotteryHistory({super.key});
@@ -9,7 +10,40 @@ class LotteryHistory extends StatefulWidget {
 }
 
 class _LotteryHistoryState extends State<LotteryHistory> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static const String TICKETS_KEY = 'lottery_tickets';
+  List<Map<String, dynamic>> tickets = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadTickets();
+  }
+
+  Future<void> loadTickets() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<String> ticketStrings = prefs.getStringList(TICKETS_KEY) ?? [];
+
+      setState(() {
+        tickets = ticketStrings.map((ticketString) {
+          try {
+            return Map<String, dynamic>.from(jsonDecode(ticketString));
+          } catch (e) {
+            print('Error decoding ticket: $e');
+            return <String, dynamic>{};
+          }
+        }).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading tickets: $e');
+      setState(() {
+        tickets = [];
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,24 +52,11 @@ class _LotteryHistoryState extends State<LotteryHistory> {
         title: const Text("Scanned Ticket History"),
         centerTitle: true,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('saved_tickets').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          return _buildHistoryList(snapshot.data!.docs);
-        },
-      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : tickets.isEmpty
+              ? _buildEmptyState()
+              : _buildHistoryList(),
     );
   }
 
@@ -64,13 +85,14 @@ class _LotteryHistoryState extends State<LotteryHistory> {
     );
   }
 
-  Widget _buildHistoryList(List<QueryDocumentSnapshot> tickets) {
+  Widget _buildHistoryList() {
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: tickets.length,
       itemBuilder: (context, index) {
-        final ticket = tickets[index].data() as Map<String, dynamic>;
-        final doubleChance = ticket['double_chance']?.join(', ') ?? 'N/A';
+        final ticket = tickets[index];
+        final doubleChance =
+            (ticket['double_chance'] as List?)?.join(', ') ?? 'N/A';
         final hasWinningChance = ticket['winning_chance'] == true;
 
         return Card(
@@ -84,7 +106,7 @@ class _LotteryHistoryState extends State<LotteryHistory> {
               children: [
                 Expanded(
                   child: ListTile(
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.confirmation_number,
                       color: Colors.green,
                     ),
@@ -94,21 +116,25 @@ class _LotteryHistoryState extends State<LotteryHistory> {
                       children: [
                         Text("Date: ${ticket['date'] ?? 'N/A'}"),
                         Text(
-                            "Numbers: ${ticket['numbers']?.join(', ') ?? 'N/A'}"),
+                            "Numbers: ${(ticket['numbers'] as List?)?.join(', ') ?? 'N/A'}"),
                         if (doubleChance != 'N/A')
                           Text("Double Chance: $doubleChance"),
+                        Text("Scanned by: ${ticket['username'] ?? 'Unknown'}"),
+                        Text(
+                            "Scanned on: ${_formatTimestamp(ticket['timestamp'])}"),
                       ],
                     ),
                   ),
                 ),
                 if (hasWinningChance)
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     decoration: BoxDecoration(
                       color: Colors.green.shade100,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Winning Chance!',
                       style: TextStyle(
                         color: Colors.green,
@@ -122,5 +148,15 @@ class _LotteryHistoryState extends State<LotteryHistory> {
         );
       },
     );
+  }
+
+  String _formatTimestamp(String? timestamp) {
+    if (timestamp == null) return 'Unknown';
+    try {
+      final DateTime date = DateTime.parse(timestamp);
+      return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}';
+    } catch (e) {
+      return 'Invalid Date';
+    }
   }
 }
